@@ -32,9 +32,17 @@ export async function POST(request: NextRequest) {
     const result = await generateOmikujiText(input);
     return NextResponse.json({ result });
   } catch (err) {
+    const status = typeof (err as { status?: number })?.status === "number" ? (err as { status: number }).status : 500;
+    const message = err instanceof Error ? err.message : "Unknown error";
+    if (status === 429) {
+      return NextResponse.json(
+        { error: "OpenAIの利用枠に達しました。プラン・請求設定を確認してください。（429）" },
+        { status: 503 }
+      );
+    }
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : "Unknown error" },
-      { status: 500 }
+      { error: message },
+      { status: status >= 400 && status < 600 ? status : 500 }
     );
   }
 }
