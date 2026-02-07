@@ -10,18 +10,22 @@ function getCacheKey(input: string): string {
   return CACHE_KEY_PREFIX + input.trim().toLowerCase();
 }
 
+const CONFIRM_MESSAGE = "過激な表現を含むが問題ないか";
+
 export default function Home() {
   const [input, setInput] = useState("");
   const [result, setResult] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showConfirm, setShowConfirm] = useState(false);
   const resultRef = useRef<HTMLDivElement>(null);
 
-  const handleSubmit = async () => {
-    setError(null);
-    setResult(null);
+  const doGenerate = async () => {
     const trimmed = input.trim();
     if (!trimmed) return;
+
+    setError(null);
+    setResult(null);
 
     const cacheKey = getCacheKey(trimmed);
     const cached =
@@ -59,6 +63,17 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSubmit = () => {
+    const trimmed = input.trim();
+    if (!trimmed) return;
+    setShowConfirm(true);
+  };
+
+  const handleConfirmOk = () => {
+    setShowConfirm(false);
+    doGenerate();
   };
 
   const handleSaveImage = async () => {
@@ -101,6 +116,37 @@ export default function Home() {
         >
           {loading ? "予言中…" : "絶望を予言する"}
         </button>
+
+        {showConfirm && (
+          <div
+            className="fixed inset-0 z-10 flex items-center justify-center bg-black/80 p-4"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="confirm-title"
+          >
+            <div className="w-full max-w-sm rounded border border-gray-600 bg-black p-6">
+              <p id="confirm-title" className="mb-6 text-center">
+                {CONFIRM_MESSAGE}
+              </p>
+              <div className="flex justify-center gap-4">
+                <button
+                  type="button"
+                  onClick={() => setShowConfirm(false)}
+                  className="rounded border border-gray-600 px-4 py-2 hover:bg-gray-800"
+                >
+                  キャンセル
+                </button>
+                <button
+                  type="button"
+                  onClick={handleConfirmOk}
+                  className="rounded bg-white px-4 py-2 text-black hover:bg-gray-200"
+                >
+                  問題ない
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {error && (
           <p className="mt-4 text-red-400" role="alert">

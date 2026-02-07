@@ -23,15 +23,18 @@ describe("Home", () => {
     }
   });
 
-  it("入力→ボタン押下→APIレスポンスが画面に表示される", async () => {
+  it("入力→ボタン押下→確認で問題ない→APIレスポンスが画面に表示される", async () => {
     const user = userEvent.setup();
     render(<Home />);
 
     const input = screen.getByPlaceholderText(/今日何すんの/);
     await user.type(input, "仕事");
 
-    const button = screen.getByRole("button", { name: /絶望を予言する/ });
-    await user.click(button);
+    const submitButton = screen.getByRole("button", { name: /絶望を予言する/ });
+    await user.click(submitButton);
+
+    const confirmButton = screen.getByRole("button", { name: /問題ない/ });
+    await user.click(confirmButton);
 
     await waitFor(() => {
       expect(screen.getByText(/【ランク】大凶/)).toBeInTheDocument();
