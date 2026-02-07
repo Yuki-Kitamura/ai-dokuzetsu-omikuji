@@ -1,3 +1,31 @@
+# AdSense 設定メモ
+
+## サイト審査（所有権の確認）
+
+「サイトの審査が必要です」と表示されたら、**確認方法で「メタタグ」を選択**してください。
+
+1. AdSense で **「メタタグ」** を選ぶ
+2. 表示されたコードの **`content="..."` の中身だけ**（長い英数字）をコピー
+3. 次のように設定する:
+   - **ローカル**: `.env.local` に  
+     `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION=ここにコピーした長い英数字`
+   - **Vercel**: プロジェクト → Settings → Environment Variables に  
+     `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` = コピーした長い英数字
+4. **必ずデプロイし直す**
+   - Vercel: 環境変数を保存したあと、**Deployments** から **「Redeploy」** を実行する（「再デプロイしないとメタタグが反映されません」）
+   - ローカル: `npm run dev` を一度止めてから再起動
+5. デプロイ完了後、**ブラウザで本番URLを開き「ページのソースを表示」** し、`google-site-verification` を検索して `<meta name="google-site-verification" content="...">` が含まれているか確認する
+6. メタタグがソースに見えたら、AdSense で **「確認」** をクリック
+
+**「サイトの所有権を確認できませんでした」と出る場合**
+- 環境変数を追加した**あと**に **Redeploy しているか** 確認する（変数だけ追加で再デプロイしていないと、古いビルドのままなのでメタタグが出ません）
+- 本番URL（例: https://ai-dokuzetsu-omikuji.vercel.app）を開き、右クリック → **「ページのソースを表示」** で `google-site-verification` を検索する。見つからなければ、Vercel の Environment Variables に `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` が入っているか、Redeploy したかを見直す
+- **別の方法を試す**: AdSense で「**ads.txt スニペット**」を選んだ場合、表示された1行（例: `google.com, pub-xxxxxxxxxx, DIRECT, xxxxx`）をコピーし、プロジェクトの **`public/ads.txt`** にその1行だけを保存してデプロイする。すると `https://あなたのドメイン/ads.txt` でその内容が表示され、AdSense が確認できる
+
+このプロジェクトでは `app/layout.tsx` の `<head>` で上記の環境変数を読み、`<meta name="google-site-verification" content="...">` を出力しています。
+
+---
+
 # AdSense スロット（広告ユニット）の設定方法
 
 スロットIDは、**広告ユニット**を作成すると発行されます。  

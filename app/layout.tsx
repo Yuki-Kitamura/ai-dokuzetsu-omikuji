@@ -10,6 +10,8 @@ export const metadata: Metadata = {
   description: "絶望を予言するAIおみくじ",
 };
 
+const googleSiteVerification = process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION;
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -17,6 +19,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja">
+      <head>
+        {googleSiteVerification && (
+          <meta
+            name="google-site-verification"
+            content={googleSiteVerification}
+          />
+        )}
+      </head>
       <body
         className={`${jetbrainsMono.className} bg-black text-white min-h-screen antialiased`}
       >

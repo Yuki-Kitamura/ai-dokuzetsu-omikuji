@@ -3,7 +3,6 @@
 import { useState, useRef } from "react";
 import { toPng } from "html-to-image";
 
-const WARNING_LINE = "⚠️ダークユーモア注意！気にしないでね！";
 const CACHE_KEY_PREFIX = "omikuji:";
 
 function getCacheKey(input: string): string {
@@ -96,7 +95,19 @@ export default function Home() {
   return (
     <div className="flex min-h-screen flex-col">
       <main className="flex flex-1 flex-col items-center justify-center p-8 pb-24">
-        <h1 className="mb-8 text-2xl font-bold">AI毒舌おみくじ</h1>
+        {/* 追加: 初見ユーザー向けの導入ブロック（キャッチコピー・説明・使い方） */}
+        <header className="mb-8 w-full max-w-md text-center">
+          <h1 className="mb-3 text-2xl font-bold">AI毒舌おみくじ</h1>
+          <p className="mb-2 text-lg font-medium leading-snug">
+            今日の予定を入れると、AIが友だちノリで全力ツッコミしてくれるおみくじです。
+          </p>
+          <p className="mb-4 text-sm leading-relaxed text-gray-300">
+            「ランク」「おみくじ」「ラッキーアイテム」の3つで、ちょっと残念な未来を面白く予言します。スクショして送りたくなる一言をお楽しみください。
+          </p>
+          <p className="text-xs text-gray-400">
+            今日の予定を1行で入れて、「絶望を予言する」を押すだけ。
+          </p>
+        </header>
 
         <input
           type="text"
@@ -160,7 +171,6 @@ export default function Home() {
               ref={resultRef}
               className="rounded border border-gray-700 bg-black p-4 text-sm leading-relaxed"
             >
-              <p>{WARNING_LINE}</p>
               <pre className="mt-2 whitespace-pre-wrap font-sans">
                 {result}
               </pre>
