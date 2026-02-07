@@ -1,0 +1,87 @@
+# プロジェクト共通ルール（AI毒舌おみくじ）
+
+## 開発環境と構成
+- プロジェクトルート:
+  - /Users/yukikitamura/Documents/projects/ai-dokuzetsu-omikuji
+- フレームワーク:
+  - Next.js 15（App Router, TypeScript）
+- スタイル:
+  - Tailwind CSS
+  - フォントは JetBrains Mono（Google Fonts）を使用
+- AI:
+  - OpenAI gpt-4o-mini を基本使用
+  - モデルは環境変数 OPENAI_MODEL から読み取り、未設定なら "gpt-4o-mini"
+- パッケージマネージャ:
+  - npm を前提にコマンドを提案すること（pnpm/yarnは使わない）
+
+## 環境構成
+- 環境は最低2つ用意すること:
+  - 本番: Vercel の main/master ブランチ
+  - 検証: Vercel の dev ブランチ（または preview デプロイ）を利用
+- 環境変数:
+  - すべて .env.local や Vercel の Environment Variables 経由で管理し、コードに直書きしないこと。
+  - 必須:
+    - OPENAI_API_KEY
+    - OPENAI_MODEL
+- .env.local のフォーマット例（ローカル用）:
+  - OPENAI_API_KEY=sk-xxxxxx
+  - OPENAI_MODEL=gpt-4o-mini
+
+## インストールと初期セットアップ
+- 新規セットアップ時に必ず以下を行うこと:
+  1. Next.js + TypeScript + Tailwind のプロジェクト初期化
+  2. OpenAI SDK の導入
+  3. テスト環境（Vitest + React Testing Library）の導入
+  4. PWA に必要な manifest とメタタグの配置
+
+- 具体的に実行するコマンドの例（npm前提）:
+  - npx create-next-app@latest ai-dokuzetsu-omikuji --typescript --app --tailwind
+  - cd ai-dokuzetsu-omikuji
+  - npm install openai html-to-image
+  - npm install -D vitest @testing-library/react @testing-library/jest-dom @testing-library/user-event jsdom
+
+## テストポリシー
+- テストフレームワーク: Vitest
+- UIコンポーネント:
+  - React Testing Library を使って、最低限以下をテストすること:
+    - 入力 → ボタン押下 → ローディング表示 → 結果表示 までのフロー
+- API Route (/api/omikuji):
+  - 入力バリデーション（空文字の場合は 400 を返す）
+  - OpenAIクライアント呼び出しが1回行われること（モックで検証）
+- テストは `npm test` で一括実行できるように設定すること。
+
+## 実装・修正ルール
+- 大きな変更は以下の順序で行うこと:
+  1. 目的と変更範囲をコメントで明示
+  2. 型エラー・Lintエラーが出ないように修正
+  3. 既存テストを実行し、必要に応じてテストを追加修正
+- UI変更時:
+  - app/page.tsx だけで完結するように心がける（コンポーネント分割はしても良いが過度に細かくしない）。
+- API仕様変更時:
+  - app/api/omikuji/route.ts のインターフェース（入力JSONと出力JSON）の変更点をコメントで説明する。
+- ログ:
+  - 本番ビルドでは console.log を残さないこと。
+
+## アプリ仕様（簡易）
+- 黒背景 (#000)、白文字 (#FFF)、JetBrains Mono フォント。
+- 画面中央に:
+  - テキスト入力 (placeholder: 「今日何すんの？（どうせ失敗だろ）」, maxlength: 50)
+  - 「絶望を予言する」ボタン
+- 下部に:
+  - おみくじ結果（4行構成）
+  - シェアボタン（結果部分を画像として保存）
+- 画面下固定にバナー広告用の枠 (ダミー実装で OK、後でAdSense/AdMobを入れられるようにしておく)。
+
+## OpenAI 利用ルール
+- モデル: 原則 gpt-4o-mini
+- OpenAIクライアントは専用ファイル（例: lib/openai.ts）に切り出し、API Route からインポートする。
+- System Prompt では以下を必ず守ること:
+  - 「死ね」「殺す」「死」「自殺」「病気」「病」「病院」などのワード禁止
+  - 人種・宗教・障害・性的指向・性別・外見を攻撃しない
+  - 「お前」「アンタ」などの軽い呼びかけはOK
+  - 出力は最大50文字程度の短い日本語
+
+## 修正時の方針
+- 既存コードを大きく書き換えない。なるべく差分最小で修正する。
+- 新しいライブラリを追加したい場合は、まず package.json に書いてから import を行う。
+- 不明点がある場合は、いきなりコードを変更せず、コメントで「ここは仕様未確定」と残すこと。
