@@ -39,6 +39,7 @@ git push -u origin main
 2. **Environment Variables** で以下を設定:
    - `OPENAI_API_KEY`: あなたの OpenAI API キー
    - `OPENAI_MODEL`: `gpt-4o-mini`（または使いたいモデル）
+   - （任意）**Google AdSense**: `NEXT_PUBLIC_ADSENSE_CLIENT_ID`（ca-pub-xxx）、`NEXT_PUBLIC_ADSENSE_SLOT_BANNER`（広告スロットID）。未設定なら画面下部は「ここに広告が入ります（ダミー）」表示。
 3. **Deploy** を実行。
 
 ### 設定ポイント

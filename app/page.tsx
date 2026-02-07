@@ -175,13 +175,6 @@ export default function Home() {
           </div>
         )}
       </main>
-
-      <footer
-        className="fixed bottom-0 left-0 right-0 flex h-16 items-center justify-center bg-[#111111] text-sm text-gray-400"
-        aria-hidden
-      >
-        ここに広告が入ります（ダミー）
-      </footer>
     </div>
   );
 }
