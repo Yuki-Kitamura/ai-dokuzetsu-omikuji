@@ -16,7 +16,7 @@ npm test
 npm run build
 ```
 
-- `.env.local` に `OPENAI_API_KEY` と `OPENAI_MODEL` を設定すること。
+- `.env.local` に `GEMINI_API_KEY` を設定すること。
 
 ## 2. GitHub に push
 
@@ -37,8 +37,7 @@ git push -u origin main
 
 1. [Vercel](https://vercel.com) にログインし、**Add New Project** で GitHub リポジトリをインポート。
 2. **Environment Variables** で以下を設定:
-   - `OPENAI_API_KEY`: あなたの OpenAI API キー
-   - `OPENAI_MODEL`: `gpt-4o-mini`（または使いたいモデル）
+   - `GEMINI_API_KEY`: Google AI Studio で取得した Gemini API キー
    - （任意）**Google AdSense**: `NEXT_PUBLIC_ADSENSE_CLIENT_ID`（ca-pub-xxx）、`NEXT_PUBLIC_ADSENSE_SLOT_BANNER`（広告スロットID）。未設定なら画面下部は「ここに広告が入ります（ダミー）」表示。
 3. **Deploy** を実行。
 

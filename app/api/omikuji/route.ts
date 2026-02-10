@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { generateOmikujiText } from "@/lib/openai";
+import { generateOmikujiText } from "@/lib/gemini";
 
 /**
  * POST /api/omikuji
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
     const message = err instanceof Error ? err.message : "Unknown error";
     if (status === 429) {
       return NextResponse.json(
-        { error: "OpenAIの利用枠に達しました。プラン・請求設定を確認してください。（429）" },
+        { error: "APIの利用枠に達しました。しばらく経ってからお試しください。（429）" },
         { status: 503 }
       );
     }

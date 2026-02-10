@@ -1,8 +1,9 @@
-import OpenAI from "openai";
+import { GoogleGenAI } from "@google/genai";
 
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-const OPENAI_MODEL = process.env.OPENAI_MODEL ?? "gpt-4o-mini";
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const MODEL = "gemini-2.5-flash";
 
+// 既存のシステムプロンプト（変更なし）
 const SYSTEM_PROMPT = `
 あなたはHan Solo、Tyrion Lannister、有吉弘行、千原ジュニアを融合した毒舌の化身。
 予定を聞いたら、その予定の「最も惨めな現実」を正論＋ブラックジョークで3行に叩き込む。
@@ -23,8 +24,10 @@ const SYSTEM_PROMPT = `
 おみくじは必ずこの3ステップで組み立てろ：
 
 1. 入力された予定でしか起きない「具体的な惨めさ」を1つだけ選ぶ
-2. 「それはお前が悪い」が暗に伝わる正論で抉る
+2. 直接「お前が悪い」とは言わず、状況を描写するだけで「あ、詰んでるな」と本人が気づく書き方にしろ
 3. ブラックor皮肉でトドメ。予定の現実から絶対に逸脱するな
+4. 詩的・文学的な比喩は絶対使うな。居酒屋で友達に話す言葉遣いだけで書け
+5. 実際に起きない非現実的な展開は禁止。「あー分かる」と共感できるリアルな惨めさだけを書け
 
 ==================== 文体 ====================
 - 短文で畳みかける。口語全開。最後は言い切り。
@@ -48,30 +51,28 @@ const SYSTEM_PROMPT = `
 
 /**
  * 入力（今日何するか）をもとに、毒舌おみくじのテキストを1件生成する。
- * .env.local の OPENAI_API_KEY と OPENAI_MODEL を使用（未設定時は gpt-4o-mini）。
+ * .env.local の GEMINI_API_KEY を使用。Gemini 2.5 Flash（thinking OFF）。
  */
 export async function generateOmikujiText(input: string): Promise<string> {
-  if (!OPENAI_API_KEY) {
-    throw new Error("OPENAI_API_KEY is not set");
+  if (!GEMINI_API_KEY) {
+    throw new Error("GEMINI_API_KEY is not set");
   }
 
-  const client = new OpenAI({ apiKey: OPENAI_API_KEY });
+  const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
-  const completion = await client.chat.completions.create({
-    model: OPENAI_MODEL,
-    messages: [
-      { role: "system", content: SYSTEM_PROMPT },
-      {
-        role: "user",
-        content: `今日の予定・やりたいこと: ${input}\n\n上記に対するおみくじ結果を、指定フォーマット（【ランク】【おみくじ】【ラッキーアイテム】）で返してください。`,
-      },
-    ],
-    max_tokens: 200,
+  const response = await ai.models.generateContent({
+    model: MODEL,
+    contents: `今日の予定・やりたいこと: ${input}\n\n上記に対するおみくじ結果を、指定フォーマット（【ランク】【おみくじ】【ラッキーアイテム】）で返してください。`,
+    config: {
+      systemInstruction: SYSTEM_PROMPT,
+      maxOutputTokens: 200,
+      thinkingConfig: { thinkingBudget: 0 },
+    },
   });
 
-  const content = completion.choices[0]?.message?.content?.trim();
+  const content = response.text?.trim();
   if (content == null || content === "") {
-    throw new Error("OpenAI returned empty content");
+    throw new Error("Gemini returned empty content");
   }
 
   return content;

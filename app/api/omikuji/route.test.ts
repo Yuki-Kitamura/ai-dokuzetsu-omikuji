@@ -1,11 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { POST } from "./route";
 
-vi.mock("@/lib/openai", () => ({
+vi.mock("@/lib/gemini", () => ({
   generateOmikujiText: vi.fn(),
 }));
 
-const { generateOmikujiText } = await import("@/lib/openai");
+const { generateOmikujiText } = await import("@/lib/gemini");
 
 describe("POST /api/omikuji", () => {
   beforeEach(() => {

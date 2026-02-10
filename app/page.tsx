@@ -47,7 +47,7 @@ export default function Home() {
         const msg = data.error ?? "エラーが発生しました";
         const isQuotaError = res.status === 503 || /quota|429|利用枠/.test(String(msg));
         if (isQuotaError) {
-          setError("OpenAIの利用枠に達しています。プラン・請求設定を確認してください。");
+          setError("APIの利用枠に達しています。しばらく経ってからお試しください。");
         } else {
           setError(msg);
         }
